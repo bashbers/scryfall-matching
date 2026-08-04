@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -b && vite build",
     "dev": "vite",
@@ -12,6 +14,9 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
@@ -22,6 +27,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
+    "@playwright/test": "^1.52.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
@@ -30,9 +39,11 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.12",
     "globals": "^15.11.0",
+    "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.8.1",
-    "vite": "^5.4.8"
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
   }
 }

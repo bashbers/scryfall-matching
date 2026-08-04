@@ -68,7 +68,7 @@ export function CardSwiper({ card, onLike, onDislike, onViewed }: CardSwiperProp
       <div
         className="card-image-wrap"
         onPointerDown={(event) => {
-          if (event.button !== 0) {
+          if (event.pointerType === "mouse" && event.button > 0) {
             return;
           }
           startX.current = event.clientX;

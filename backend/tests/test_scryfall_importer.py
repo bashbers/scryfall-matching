@@ -32,6 +32,12 @@ class FakeBulkDataClient:
         Path(destination).write_text(self._source, encoding="utf-8")
 
 
+class InterruptedBulkDataClient(FakeBulkDataClient):
+    def download(self, export: BulkDataExport, destination: str) -> None:
+        Path(destination).write_text("partial", encoding="utf-8")
+        raise OSError("connection interrupted")
+
+
 def test_importer_compacts_deduplicates_and_swaps_snapshot(tmp_path: Path) -> None:
     source = json.dumps(
         [
@@ -75,6 +81,18 @@ def test_failed_import_retains_existing_dataset_and_records_failure(tmp_path: Pa
     metadata = json.loads(old_metadata.read_text(encoding="utf-8"))
     assert metadata["importStatus"] == "failed"
     assert metadata["datasetVersion"] == "old"
+
+
+def test_interrupted_download_does_not_publish_a_partial_snapshot(tmp_path: Path) -> None:
+    provider = _provider()
+    importer = ScryfallBulkImporter(tmp_path, 1, client=InterruptedBulkDataClient("[]"))
+
+    with pytest.raises(OSError, match="connection interrupted"):
+        importer.refresh(provider)
+
+    assert provider.statistics().dataset_version == "old-provider"
+    assert not (tmp_path / "cards.compact.jsonl").exists()
+    assert not (tmp_path / "oracle_cards.download.tmp").exists()
 
 
 def test_existing_dataset_version_skips_download(tmp_path: Path) -> None:

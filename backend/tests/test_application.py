@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+from time import perf_counter
 
+from fastapi import Query
 from fastapi.testclient import TestClient
 
 from scryfall_matching.cards.domain import CompactCard
@@ -60,6 +62,22 @@ def test_random_cards_returns_error_when_full_batch_is_unavailable() -> None:
 
     assert response.status_code == 503
     assert response.json()["code"] == "cards_unavailable"
+
+
+def test_request_validation_errors_use_the_standard_api_error_shape() -> None:
+    test_app = create_app(_test_settings())
+
+    @test_app.get("/test-validation")
+    def validation_fixture(required_integer: int = Query()) -> dict[str, int]:
+        return {"value": required_integer}
+
+    response = TestClient(test_app).get("/test-validation?required_integer=not-a-number")
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "code": "validation_error",
+        "message": "The request contains invalid data.",
+    }
 
 
 def test_live_health_does_not_depend_on_card_repository() -> None:
@@ -131,6 +149,24 @@ def test_checked_in_openapi_contract_contains_phase_1_endpoints() -> None:
     ]
     assert cards_schema["minItems"] == 5
     assert cards_schema["maxItems"] == 5
+
+
+def test_random_cards_endpoint_meets_latency_boundary() -> None:
+    test_app = create_app(_test_settings())
+    test_app.state.card_provider = InMemoryCardRepository(
+        _cards(10_000),
+        dataset_version="performance",
+    )
+    client = TestClient(test_app)
+    timings = []
+
+    for _ in range(50):
+        started_at = perf_counter()
+        response = client.get("/api/v1/cards/random")
+        timings.append(perf_counter() - started_at)
+        assert response.status_code == 200
+
+    assert sorted(timings)[int(len(timings) * 0.95)] < 0.1
 
 
 def _test_settings() -> Settings:

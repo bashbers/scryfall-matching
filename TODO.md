@@ -60,13 +60,13 @@ Bronnen: `requirements.md` en `technisch-ontwerp-scryfall-matching.md` uit het C
 
 ## Fase 5 — Tests en kwaliteitsgrenzen
 
-- [ ] Schrijf backend-unit-tests voor filtering, mapping, deduplicatie, random batches, repository-swap en health-status.
-- [ ] Schrijf import-integratietests voor succes, corrupte input, onderbroken download, atomische vervanging en herstel met bestaande dataset.
-- [ ] Schrijf API-contracttests voor random batches, validatiefouten en liveness/readiness.
-- [ ] Schrijf frontend-unit-tests voor swipes, flip, localStorage, Commander-badge, keyboard en reduced motion.
-- [ ] Schrijf frontend-integratietests voor queue, prefetch, retries, retry-UI en duplicate filtering.
-- [ ] Schrijf Playwright end-to-endtests voor de volledige like/dislike/history-flow, refresh en netwerkstoring.
-- [ ] Verifieer prestatie-eisen: `GET /cards/random` p95 < 100 ms, kaartwissels zonder netwerk wanneer de queue gevuld is en passend geheugenverbruik binnen 1 GB RAM.
+- [x] Schrijf backend-unit-tests voor filtering, mapping, deduplicatie, random batches, repository-swap en health-status.
+- [x] Schrijf import-integratietests voor succes, corrupte input, onderbroken download, atomische vervanging en herstel met bestaande dataset.
+- [x] Schrijf API-contracttests voor random batches, validatiefouten en liveness/readiness.
+- [x] Schrijf frontend-unit-tests voor swipes, flip, localStorage, Commander-badge, keyboard en reduced motion.
+- [x] Schrijf frontend-integratietests voor queue, prefetch, retries, retry-UI en duplicate filtering.
+- [x] Schrijf Playwright end-to-endtests voor de volledige like/dislike/history-flow, refresh en netwerkstoring.
+- [x] Verifieer prestatie-eisen: `GET /cards/random` p95 < 100 ms, kaartwissels zonder netwerk wanneer de queue gevuld is en passend geheugenverbruik binnen 1 GB RAM.
 
 ## Fase 6 — CI, containers en oplevering
 
