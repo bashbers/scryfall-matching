@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { Card } from "../../api/generated";
 
@@ -8,18 +9,25 @@ type CardSwiperProps = {
   onLike: () => void;
   onDislike: () => void;
   onViewed: () => void;
+  queuedCards: readonly Card[];
 };
 
-const SWIPE_DISTANCE = 80;
+const SWIPE_OFFSET = 110;
+const SWIPE_VELOCITY = 650;
+const STACK_SIZE = 3;
 
-export function CardSwiper({ card, onLike, onDislike, onViewed }: CardSwiperProps) {
+export function CardSwiper({ card, onLike, onDislike, onViewed, queuedCards }: CardSwiperProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
-  const startX = useRef<number | null>(null);
+  const [dragIntent, setDragIntent] = useState<"like" | "dislike" | null>(null);
+  const [selection, setSelection] = useState<"like" | "dislike" | null>(null);
+  const restoreFocusAfterSelection = useRef(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     setIsFlipped(false);
     setFailedImageUrl(null);
+    setSelection(null);
     onViewed();
   }, [card.id, onViewed]);
 
@@ -29,78 +37,126 @@ export function CardSwiper({ card, onLike, onDislike, onViewed }: CardSwiperProp
       : cardBackUrl
     : card.frontImageUrl;
   const toggleFlip = () => setIsFlipped((current) => !current);
-  const finishSwipe = (endX: number) => {
-    if (startX.current === null) {
+  const selectCard = (direction: "like" | "dislike", restoreFocus = false) => {
+    if (selection) {
       return;
     }
-    const distance = endX - startX.current;
-    startX.current = null;
-    if (distance >= SWIPE_DISTANCE) {
+    restoreFocusAfterSelection.current = restoreFocus;
+    setDragIntent(direction);
+    setSelection(direction);
+  };
+  const finishDrag = (offsetX: number, velocityX: number) => {
+    if (offsetX >= SWIPE_OFFSET || velocityX >= SWIPE_VELOCITY) {
+      selectCard("like");
+    } else if (offsetX <= -SWIPE_OFFSET || velocityX <= -SWIPE_VELOCITY) {
+      selectCard("dislike");
+    } else {
+      setDragIntent(null);
+    }
+  };
+  const completeSelection = () => {
+    if (!selection) {
+      return;
+    }
+    const completedSelection = selection;
+    setSelection(null);
+    setDragIntent(null);
+    if (completedSelection === "like") {
       onLike();
-    } else if (distance <= -SWIPE_DISTANCE) {
+    } else {
       onDislike();
+    }
+    if (restoreFocusAfterSelection.current) {
+      restoreFocusAfterSelection.current = false;
+      window.requestAnimationFrame(() => document.querySelector<HTMLElement>(".card-swiper")?.focus());
     }
   };
 
   return (
-    <article
-      className="card-swiper"
-      onKeyDown={(event) => {
-        if (event.target !== event.currentTarget) {
-          return;
-        }
-        if (event.key === "ArrowRight") {
-          event.preventDefault();
-          onLike();
-        }
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          onDislike();
-        }
-        if (event.key === " " || event.key === "Enter") {
-          event.preventDefault();
-          toggleFlip();
-        }
-      }}
-      tabIndex={0}
-      aria-label={`${card.name}. Pijl-rechts liken, pijl-links afwijzen, spatie omdraaien.`}
-    >
-      <div
-        className="card-image-wrap"
-        onPointerDown={(event) => {
-          if (event.pointerType === "mouse" && event.button > 0) {
+    <div className="card-stack" aria-label="Actieve kaartstapel">
+      {queuedCards.slice(0, STACK_SIZE).reverse().map((queuedCard, reverseIndex) => {
+        const stackIndex = queuedCards.slice(0, STACK_SIZE).length - reverseIndex;
+        return (
+          <div
+            key={queuedCard.id}
+            aria-hidden="true"
+            className="card-stack-preview"
+            style={{ "--stack-index": stackIndex } as React.CSSProperties}
+          >
+            <img src={queuedCard.frontImageUrl} alt="" />
+          </div>
+        );
+      })}
+      <article
+        className="card-swiper"
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) {
             return;
           }
-          startX.current = event.clientX;
-          event.currentTarget.setPointerCapture(event.pointerId);
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            selectCard("like", true);
+          }
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            selectCard("dislike", true);
+          }
+          if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
+            toggleFlip();
+          }
         }}
-        onPointerUp={(event) => finishSwipe(event.clientX)}
-        onPointerCancel={() => {
-          startX.current = null;
-        }}
+        tabIndex={0}
+        aria-label={`${card.name}. Pijl-rechts liken, pijl-links afwijzen, spatie omdraaien.`}
       >
-        {failedImageUrl === imageUrl ? (
-          <div className="image-placeholder" role="img" aria-label="Kaartafbeelding niet beschikbaar">
-            Afbeelding niet beschikbaar
-          </div>
-        ) : (
-          <img src={imageUrl} alt={card.name} onError={() => setFailedImageUrl(imageUrl)} />
-        )}
-      </div>
-      <div className="card-details">
-        <div>
+        <motion.div
+          key={card.id}
+          className="card-image-wrap"
+          drag={selection ? false : "x"}
+          dragElastic={0.18}
+          dragMomentum={false}
+          animate={selection ? {
+            x: selection === "like" ? 520 : -520,
+            opacity: 0,
+            rotate: selection === "like" ? 16 : -16,
+          } : { x: 0, opacity: 1, rotate: 0 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { type: "tween", duration: 0.28, ease: "easeOut" }}
+          whileDrag={{ cursor: "grabbing", scale: 1.015 }}
+          onPan={(_event, info) => {
+            if (Math.abs(info.offset.x) < 24) {
+              setDragIntent(null);
+              return;
+            }
+            setDragIntent(info.offset.x > 0 ? "like" : "dislike");
+          }}
+          onPanEnd={() => !selection && setDragIntent(null)}
+          onDragEnd={(_event, info) => finishDrag(info.offset.x, info.velocity.x)}
+          onAnimationComplete={completeSelection}
+        >
+          {failedImageUrl === imageUrl ? (
+            <div className="image-placeholder" role="img" aria-label="Kaartafbeelding niet beschikbaar">
+              Afbeelding niet beschikbaar
+            </div>
+          ) : (
+            <img src={imageUrl} alt={card.name} onError={() => setFailedImageUrl(imageUrl)} />
+          )}
+          {dragIntent && <span className={`drag-intent drag-intent-${dragIntent}`}>{dragIntent === "like" ? "LIKE" : "NEE"}</span>}
+        </motion.div>
+        <div className="card-details" key={`metadata-${card.id}`}>
           <h1>{card.name}</h1>
-          {card.commanderLegal && <span className="badge">Commander-legal</span>}
+          <div className="card-meta-row">
+            {card.commanderLegal && <span className="badge">Commander-legal</span>}
+            <a href={card.scryfallUrl} target="_blank" rel="noreferrer">
+              Bekijk op Scryfall
+            </a>
+          </div>
         </div>
-        <a href={card.scryfallUrl} target="_blank" rel="noreferrer">
-          Bekijk op Scryfall
-        </a>
-      </div>
-      <div className="card-actions" aria-label="Kaartacties">
-        <button type="button" onClick={onDislike}>Afwijzen</button>
-        <button type="button" onClick={toggleFlip}>Draai om</button>
-        <button type="button" onClick={onLike}>Liken</button>
-      </div>
-    </article>
+        <div className="card-actions" aria-label="Kaartacties">
+          <button className="button-dislike" type="button" onClick={() => selectCard("dislike")}>Afwijzen</button>
+          <button type="button" onClick={toggleFlip}>Draai om</button>
+          <button className="button-like" type="button" onClick={() => selectCard("like")}>Liken</button>
+        </div>
+      </article>
+    </div>
   );
 }

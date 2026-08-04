@@ -4,12 +4,20 @@ import { expect, test, vi } from "vitest";
 import { sampleCard } from "../../test/fixtures";
 import { CardSwiper } from "./CardSwiper";
 
-function renderSwiper(card = sampleCard) {
+function renderSwiper(card = sampleCard, queuedCards = [] as typeof sampleCard[]) {
   const onLike = vi.fn();
   const onDislike = vi.fn();
   const onViewed = vi.fn();
-  render(<CardSwiper card={card} onLike={onLike} onDislike={onDislike} onViewed={onViewed} />);
-  return { onLike, onDislike, onViewed };
+  const rendered = render(
+    <CardSwiper
+      card={card}
+      queuedCards={queuedCards}
+      onLike={onLike}
+      onDislike={onDislike}
+      onViewed={onViewed}
+    />,
+  );
+  return { ...rendered, onLike, onDislike, onViewed };
 }
 
 test("shows commander status, tracks viewing, and flips double-faced cards", async () => {
@@ -25,36 +33,45 @@ test("shows commander status, tracks viewing, and flips double-faced cards", asy
   expect(screen.getByRole("img", { name: "Sample Card" })).toHaveAttribute("src", sampleCard.backImageUrl);
 });
 
-test("supports keyboard swipe actions", () => {
-  const { onLike, onDislike } = renderSwiper();
+test("starts the matching swipe animation for keyboard actions", () => {
+  renderSwiper();
   const card = screen.getByRole("article");
 
   fireEvent.keyDown(card, { key: "ArrowRight" });
-  fireEvent.keyDown(card, { key: "ArrowLeft" });
 
-  expect(onLike).toHaveBeenCalledOnce();
-  expect(onDislike).toHaveBeenCalledOnce();
+  expect(screen.getByText("LIKE")).toBeInTheDocument();
 });
 
-test("supports touch swipes on the card image", () => {
-  const { onLike } = renderSwiper();
-  const image = screen.getByRole("img", { name: "Sample Card" });
+test("keeps the active card focused after the card changes", () => {
+  const onLike = vi.fn();
+  const onDislike = vi.fn();
+  const onViewed = vi.fn();
+  const { rerender } = render(
+    <CardSwiper card={sampleCard} queuedCards={[]} onLike={onLike} onDislike={onDislike} onViewed={onViewed} />,
+  );
+  screen.getByRole("article").focus();
 
-  fireEvent(image, pointerEvent("pointerdown", 20));
-  fireEvent(image, pointerEvent("pointerup", 120));
+  rerender(
+    <CardSwiper
+      card={{ ...sampleCard, id: "next-card", name: "Next Card" }}
+      queuedCards={[]}
+      onLike={onLike}
+      onDislike={onDislike}
+      onViewed={onViewed}
+    />,
+  );
 
-  expect(onLike).toHaveBeenCalledOnce();
+  expect(screen.getByRole("article")).toHaveFocus();
 });
 
-function pointerEvent(type: string, clientX: number): Event {
-  const event = new Event(type, { bubbles: true });
-  Object.defineProperties(event, {
-    clientX: { value: clientX },
-    pointerId: { value: 1 },
-    pointerType: { value: "touch" },
-  });
-  return event;
-}
+test("shows already fetched cards as previews underneath the active card", () => {
+  const { container } = renderSwiper(sampleCard, [
+    { ...sampleCard, id: "queued-one", name: "Queued One" },
+    { ...sampleCard, id: "queued-two", name: "Queued Two" },
+  ]);
+
+  expect(container.querySelectorAll(".card-stack-preview")).toHaveLength(2);
+});
 
 test("uses a local back and keeps the other face usable after an image error", async () => {
   const user = userEvent.setup();

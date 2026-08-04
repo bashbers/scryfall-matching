@@ -8,6 +8,7 @@ const PREFETCH_THRESHOLD = 2;
 
 export type CardQueue = {
   activeCard: Card | undefined;
+  queuedCards: readonly Card[];
   cardsRemaining: number;
   dismissActiveCard: () => void;
   isLoading: boolean;
@@ -62,6 +63,7 @@ export function useCardQueue({ retryDelays = RETRY_DELAYS }: UseCardQueueOptions
   return useMemo(
     () => ({
       activeCard,
+      queuedCards: queue.slice(1),
       cardsRemaining: queue.length,
       dismissActiveCard: () => setQueue((current) => current.slice(1)),
       isLoading: !activeCard && isLoading,
@@ -69,6 +71,6 @@ export function useCardQueue({ retryDelays = RETRY_DELAYS }: UseCardQueueOptions
       error,
       retry: () => void refetch(),
     }),
-    [activeCard, error, isFetching, isLoading, queue.length, refetch],
+    [activeCard, error, isFetching, isLoading, queue, refetch],
   );
 }

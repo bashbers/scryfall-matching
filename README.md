@@ -17,6 +17,7 @@ docker compose up --build
 ```
 
 Open daarna http://localhost:5173. De backend draait op http://localhost:8000.
+Vanaf een ander apparaat in hetzelfde netwerk open je `http://<LAN-IP-VAN-DEZE-PC>:5173`; de ontwikkelserver proxy't `/api` automatisch naar de backendcontainer.
 
 De compose-configuratie houdt toekomstige Scryfall-data in het persistente volume `scryfall-data`; er is bewust geen databasecontainer.
 De frontend voert bij elke containerstart `npm install` uit, zodat wijzigingen in `package.json` ook met het persistente `node_modules`-volume worden toegepast. Zodra de lockfile is vastgelegd, gebruikt de image `npm ci` voor reproduceerbare builds.

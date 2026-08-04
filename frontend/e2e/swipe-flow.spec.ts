@@ -49,7 +49,7 @@ const cards = [
 ];
 
 test("likes, dislikes, and shows history without relying on image delivery", async ({ page }) => {
-  await page.route("http://localhost:8000/api/v1/cards/random", (route) =>
+  await page.route("**/api/v1/cards/random", (route) =>
     route.fulfill({ json: { cards } }),
   );
   await page.goto("/");
@@ -58,6 +58,7 @@ test("likes, dislikes, and shows history without relying on image delivery", asy
   await page.getByRole("button", { name: "Liken" }).click();
   await expect(page.getByRole("heading", { name: "E2E Two" })).toBeVisible();
   await page.getByRole("button", { name: "Afwijzen" }).click();
+  await expect(page.getByRole("heading", { name: "E2E Three" })).toBeVisible();
 
   await page.reload();
 
@@ -71,14 +72,14 @@ test("likes, dislikes, and shows history without relying on image delivery", asy
 });
 
 test("shows retry UI after a network failure", async ({ page }) => {
-  await page.route("http://localhost:8000/api/v1/cards/random", (route) => route.abort("failed"));
+  await page.route("**/api/v1/cards/random", (route) => route.abort("failed"));
   await page.goto("/");
 
   await expect(page.getByRole("button", { name: "Opnieuw proberen" })).toBeVisible({ timeout: 10_000 });
 });
 
 test("supports mouse swipe on the card image", async ({ page }) => {
-  await page.route("http://localhost:8000/api/v1/cards/random", (route) =>
+  await page.route("**/api/v1/cards/random", (route) =>
     route.fulfill({ json: { cards } }),
   );
   await page.goto("/");
@@ -94,10 +95,35 @@ test("supports mouse swipe on the card image", async ({ page }) => {
   await page.mouse.up();
 
   await expect(page.getByRole("heading", { name: "E2E Two" })).toBeVisible();
+  await expect(page.locator(".card-image-wrap")).toHaveCSS("transform", "none");
+  await expect(page.getByRole("article")).toHaveCSS("transform", "none");
+});
+
+test("keeps a visible stack and keyboard focus while selecting cards", async ({ page }) => {
+  await page.route("**/api/v1/cards/random", (route) => route.fulfill({ json: { cards } }));
+  await page.goto("/");
+
+  await expect(page.locator(".card-stack-preview")).toHaveCount(3);
+  const activeCard = page.getByRole("article");
+  await activeCard.press("ArrowRight");
+  await expect(page.getByRole("heading", { name: "E2E Two" })).toBeVisible();
+  await expect(activeCard).toBeFocused();
+});
+
+test("does not overflow the header on a narrow viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.route("**/api/v1/cards/random", (route) => route.fulfill({ json: { cards } }));
+  await page.goto("/");
+
+  const widths = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+  }));
+  expect(widths.document).toBeLessThanOrEqual(widths.viewport);
 });
 
 test("honors reduced-motion preferences", async ({ page }) => {
-  await page.route("http://localhost:8000/api/v1/cards/random", (route) =>
+  await page.route("**/api/v1/cards/random", (route) =>
     route.fulfill({ json: { cards } }),
   );
   await page.emulateMedia({ reducedMotion: "reduce" });

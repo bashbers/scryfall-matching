@@ -4,11 +4,18 @@
   font-family: Inter, system-ui, sans-serif;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }
 
 .app-shell {
+  width: 100%;
   max-width: 48rem;
   margin: 0 auto;
   padding: 1.5rem;
@@ -23,7 +30,13 @@ nav {
 
 header {
   justify-content: space-between;
-  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+nav {
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 a {
@@ -37,8 +50,11 @@ a {
 }
 
 .card-swiper {
+  position: relative;
   outline: none;
   touch-action: pan-y;
+  cursor: grab;
+  z-index: 4;
 }
 
 .card-swiper:focus-visible {
@@ -47,11 +63,15 @@ a {
 }
 
 .card-image-wrap {
+  position: relative;
   aspect-ratio: 488 / 680;
-  max-width: 29rem;
+  max-width: 21rem;
   overflow: hidden;
   border-radius: 1rem;
   background: #312e81;
+  touch-action: pan-y;
+  cursor: grab;
+  z-index: 4;
 }
 
 .card-image-wrap img,
@@ -60,6 +80,54 @@ a {
   height: 100%;
   display: block;
   object-fit: cover;
+}
+
+.card-stack {
+  position: relative;
+  width: min(100%, 21rem);
+  min-height: 35rem;
+}
+
+.card-stack-preview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  aspect-ratio: 488 / 680;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #312e81;
+  transform: translateY(calc(var(--stack-index) * 0.7rem)) scale(calc(1 - var(--stack-index) * 0.025));
+  transform-origin: top center;
+  opacity: calc(1 - var(--stack-index) * 0.18);
+}
+
+.card-stack-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.drag-intent {
+  position: absolute;
+  top: 1rem;
+  padding: 0.4rem 0.65rem;
+  border: 3px solid currentColor;
+  border-radius: 0.4rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.drag-intent-like {
+  right: 1rem;
+  color: #86efac;
+  transform: rotate(10deg);
+}
+
+.drag-intent-dislike {
+  left: 1rem;
+  color: #fca5a5;
+  transform: rotate(-10deg);
 }
 
 .image-placeholder {
@@ -78,12 +146,27 @@ a {
 }
 
 .card-details {
-  max-width: 29rem;
-  padding: 0.75rem 0;
+  display: block;
+  max-width: 21rem;
+  padding: 0.5rem 0;
+  background: #111827;
+  animation: metadata-fade-in 180ms ease-out;
+}
+
+.card-details h1 {
+  margin: 0 0 0.5rem;
+}
+
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .card-actions {
-  max-width: 29rem;
+  max-width: 21rem;
+  background: #111827;
 }
 
 button {
@@ -91,6 +174,16 @@ button {
   border-radius: 0.5rem;
   padding: 0.65rem 0.9rem;
   cursor: pointer;
+}
+
+.button-like {
+  color: #052e16;
+  background: #86efac;
+}
+
+.button-dislike {
+  color: #450a0a;
+  background: #fca5a5;
 }
 
 .badge,
@@ -114,6 +207,47 @@ button {
 .card-list li {
   border-bottom: 1px solid #374151;
   padding: 0.75rem 0;
+}
+
+.card-list a {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.75rem;
+}
+
+.card-thumbnail {
+  width: 3rem;
+  aspect-ratio: 488 / 680;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+@keyframes metadata-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 30rem) {
+  .app-shell {
+    padding: 1rem;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    width: 100%;
+    gap: 0.5rem 0.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

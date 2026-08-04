@@ -78,6 +78,7 @@ function SwipeRoute() {
       <p>{queue.isRefreshing ? "Nieuwe kaarten worden opgehaald." : ""}</p>
       <CardSwiper
         card={activeCard}
+        queuedCards={queue.queuedCards}
         onViewed={() => preferences.markSeen(activeCard)}
         onLike={() => {
           preferences.like(activeCard);
