@@ -1,0 +1,9 @@
+{
+  "cardCount": 32359,
+  "compactFileSha256": "d3b959043e53a91219dd4ba63df9e07c427db7a94ed41c616c3507edf76c644d",
+  "datasetVersion": "2026-08-04T09:02:45.219+00:00",
+  "importStatus": "complete",
+  "skippedRecords": 21,
+  "snapshotFile": "snapshots/d3b959043e53a91219dd4ba63df9e07c427db7a94ed41c616c3507edf76c644d/cards.compact.jsonl",
+  "updatedAt": "2026-08-04T09:02:45.219000Z"
+}

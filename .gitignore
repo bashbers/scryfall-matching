@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+!.env.example
+data/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

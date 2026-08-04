@@ -1,0 +1,2 @@
+[console_scripts]
+scryfall-matching-export-openapi = scryfall_matching.core.openapi:main

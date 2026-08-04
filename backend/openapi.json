@@ -1,0 +1,237 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Scryfall Matching API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/cards/random": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Random Cards",
+        "operationId": "random_cards_api_v1_cards_random_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RandomCardsResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The active card repository cannot serve a full batch.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Live",
+        "operationId": "live_api_v1_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Ready",
+        "operationId": "ready_api_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyHealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dataset is empty or unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiError"
+      },
+      "CardResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "frontImageUrl": {
+            "type": "string",
+            "title": "Frontimageurl"
+          },
+          "backImageUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backimageurl"
+          },
+          "isDoubleSided": {
+            "type": "boolean",
+            "title": "Isdoublesided"
+          },
+          "commanderLegal": {
+            "type": "boolean",
+            "title": "Commanderlegal"
+          },
+          "scryfallUrl": {
+            "type": "string",
+            "title": "Scryfallurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "frontImageUrl",
+          "backImageUrl",
+          "isDoubleSided",
+          "commanderLegal",
+          "scryfallUrl"
+        ],
+        "title": "CardResponse"
+      },
+      "LiveHealthResponse": {
+        "properties": {
+          "status": {
+            "const": "live",
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "LiveHealthResponse"
+      },
+      "RandomCardsResponse": {
+        "properties": {
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/CardResponse"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 5,
+            "title": "Cards"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cards"
+        ],
+        "title": "RandomCardsResponse"
+      },
+      "ReadyHealthResponse": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ready",
+              "empty",
+              "unavailable"
+            ],
+            "type": "string",
+            "title": "Status"
+          },
+          "datasetVersion": {
+            "type": "string",
+            "title": "Datasetversion"
+          },
+          "cardCount": {
+            "type": "integer",
+            "title": "Cardcount"
+          },
+          "loadedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loadedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "datasetVersion",
+          "cardCount",
+          "loadedAt"
+        ],
+        "title": "ReadyHealthResponse"
+      }
+    }
+  }
+}

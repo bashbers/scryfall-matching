@@ -1,0 +1,37 @@
+:root {
+  color: #f8fafc;
+  background: #111827;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+header,
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+header {
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+a {
+  color: #c4b5fd;
+}
+
+.brand {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}

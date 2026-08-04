@@ -1,0 +1,35 @@
+name: scryfall-matching
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: uvicorn scryfall_matching.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATA_PATH: ${DATA_PATH:-/app/data}
+      BATCH_SIZE: ${BATCH_SIZE:-5}
+      SCRYFALL_TIMEOUT_SECONDS: ${SCRYFALL_TIMEOUT_SECONDS:-30}
+      SCRYFALL_UPDATE_INTERVAL_HOURS: ${SCRYFALL_UPDATE_INTERVAL_HOURS:-24}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - scryfall-data:${DATA_PATH:-/app/data}
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  frontend-node-modules:
+  scryfall-data:
