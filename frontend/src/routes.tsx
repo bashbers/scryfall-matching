@@ -1,5 +1,8 @@
 import { Link, Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import { CardSwiper } from "./features/cards/CardSwiper";
 import { useCardQueue } from "./features/cards/useCardQueue";
+import { CardList } from "./features/library/CardList";
+import { useCardPreferences } from "./features/library/CardPreferences";
 
 const rootRoute = createRootRoute({ component: Layout });
 const swipeRoute = createRoute({
@@ -33,6 +36,7 @@ declare module "@tanstack/react-router" {
 }
 
 function Layout() {
+  const { storageWarning } = useCardPreferences();
   return (
     <main className="app-shell">
       <header>
@@ -46,6 +50,7 @@ function Layout() {
           <Link to="/history">Historie</Link>
         </nav>
       </header>
+      {storageWarning && <p className="storage-warning" role="alert">{storageWarning}</p>}
       <Outlet />
     </main>
   );
@@ -53,7 +58,9 @@ function Layout() {
 
 function SwipeRoute() {
   const queue = useCardQueue();
-  if (!queue.activeCard && queue.error) {
+  const preferences = useCardPreferences();
+  const activeCard = queue.activeCard;
+  if (!activeCard && queue.error) {
     return (
       <section role="alert">
         <p>Kaarten laden mislukte.</p>
@@ -63,38 +70,73 @@ function SwipeRoute() {
       </section>
     );
   }
-  if (!queue.activeCard) {
+  if (!activeCard) {
     return <p>{queue.isLoading ? "Kaarten laden…" : "Geen kaarten beschikbaar."}</p>;
   }
   return (
     <section aria-live="polite">
       <p>{queue.isRefreshing ? "Nieuwe kaarten worden opgehaald." : ""}</p>
-      <h1>{queue.activeCard.name}</h1>
+      <CardSwiper
+        card={activeCard}
+        onViewed={() => preferences.markSeen(activeCard)}
+        onLike={() => {
+          preferences.like(activeCard);
+          queue.dismissActiveCard();
+        }}
+        onDislike={() => {
+          preferences.dislike(activeCard);
+          queue.dismissActiveCard();
+        }}
+      />
       <p>{queue.cardsRemaining} kaarten in de actieve queue.</p>
-      <button type="button" onClick={queue.dismissActiveCard}>
-        Volgende kaart
-      </button>
     </section>
   );
 }
 
 function LikesRoute() {
-  return <Placeholder title="Likes" />;
+  const preferences = useCardPreferences();
+  return (
+    <ListPage title="Likes">
+      <CardList
+        cards={preferences.likedCards}
+        emptyMessage="Nog geen gelikete kaarten."
+        onRemove={(cardId) => preferences.remove("likedCards", cardId)}
+      />
+    </ListPage>
+  );
 }
 
 function DislikesRoute() {
-  return <Placeholder title="Dislikes" />;
+  const preferences = useCardPreferences();
+  return (
+    <ListPage title="Dislikes">
+      <CardList
+        cards={preferences.dislikedCards}
+        emptyMessage="Nog geen afgewezen kaarten."
+        onRemove={(cardId) => preferences.remove("dislikedCards", cardId)}
+      />
+    </ListPage>
+  );
 }
 
 function HistoryRoute() {
-  return <Placeholder title="Historie" />;
+  const preferences = useCardPreferences();
+  return (
+    <ListPage title="Historie">
+      <CardList
+        cards={preferences.seenCards}
+        emptyMessage="Nog geen kaarten bekeken."
+        onRemove={(cardId) => preferences.remove("seenCards", cardId)}
+      />
+    </ListPage>
+  );
 }
 
-function Placeholder({ title }: { title: string }) {
+function ListPage({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
       <h1>{title}</h1>
-      <p>Deze lijst wordt in de volgende fase ingevuld.</p>
+      {children}
     </section>
   );
 }

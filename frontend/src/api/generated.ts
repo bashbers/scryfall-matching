@@ -9,7 +9,7 @@ export type CardResponse = {
   "id": string;
   "name": string;
   "frontImageUrl": string;
-  "backImageUrl": string | unknown;
+  "backImageUrl": string | null;
   "isDoubleSided": boolean;
   "commanderLegal": boolean;
   "scryfallUrl": string;
@@ -27,7 +27,7 @@ export type ReadyHealthResponse = {
   "status": "ready" | "empty" | "unavailable";
   "datasetVersion": string;
   "cardCount": number;
-  "loadedAt": string | unknown;
+  "loadedAt": string | null;
 };
 
 export type Card = CardResponse;

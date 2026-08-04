@@ -71,5 +71,11 @@ function toType(schema) {
       .join("\n");
     return `{\n${properties}\n}`;
   }
-  return { string: "string", integer: "number", number: "number", boolean: "boolean" }[schema.type] ?? "unknown";
+  return {
+    string: "string",
+    integer: "number",
+    number: "number",
+    boolean: "boolean",
+    null: "null",
+  }[schema.type] ?? "unknown";
 }

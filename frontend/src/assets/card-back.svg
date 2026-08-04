@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 680" role="img" aria-label="Scryfall Matching kaartachterkant">
+  <defs>
+    <linearGradient id="background" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#2c1e43" />
+      <stop offset="1" stop-color="#111827" />
+    </linearGradient>
+    <pattern id="stars" width="48" height="48" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="8" r="1.5" fill="#e9d5ff" opacity=".65" />
+      <circle cx="31" cy="21" r="1" fill="#c4b5fd" opacity=".5" />
+      <circle cx="15" cy="38" r="1" fill="#fef3c7" opacity=".6" />
+    </pattern>
+  </defs>
+  <rect width="488" height="680" rx="24" fill="url(#background)" />
+  <rect x="18" y="18" width="452" height="644" rx="14" fill="url(#stars)" stroke="#c4b5fd" stroke-width="3" />
+  <circle cx="244" cy="340" r="130" fill="none" stroke="#fef3c7" stroke-width="4" />
+  <path d="M244 227 275 309l88 4-69 54 23 86-73-49-73 49 23-86-69-54 88-4z" fill="#c4b5fd" />
+  <text x="244" y="558" fill="#f8fafc" font-family="system-ui, sans-serif" font-size="27" font-weight="700" text-anchor="middle">SCRYFALL</text>
+  <text x="244" y="590" fill="#ddd6fe" font-family="system-ui, sans-serif" font-size="17" text-anchor="middle">MATCHING</text>
+</svg>

@@ -48,15 +48,15 @@ Bronnen: `requirements.md` en `technisch-ontwerp-scryfall-matching.md` uit het C
 
 ## Fase 4 — Swipe-ervaring en lokale gegevens
 
-- [ ] Bouw de kaartweergave met normale Scryfall-afbeelding, Commander-badge en veilige externe Scryfall-link.
-- [ ] Implementeer swipe rechts = like en swipe links = dislike, voor touch, muis en toetsenbord.
-- [ ] Voeg reduced-motion-ondersteuning toe.
-- [ ] Markeer iedere actief getoonde kaart als gezien; prefetched kaarten tellen nog niet als gezien.
-- [ ] Bewaar `likedCards`, `dislikedCards` en `seenCards` gededupliceerd in `localStorage`.
-- [ ] Bouw eenvoudige lijstweergaven voor likes, dislikes en historie, inclusief verwijderen uit lijsten.
-- [ ] Implementeer flipgedrag: echte dubbelzijdige kaarten tonen de tweede face; enkelzijdige kaarten tonen een lokaal, correct gelicentieerd Magic-card-back-asset.
-- [ ] Voeg een placeholder toe voor falende kaartafbeeldingen, zonder swipe of Scryfall-link te blokkeren.
-- [ ] Handel `localStorage`-quota af met een waarschuwing terwijl de sessie bruikbaar blijft.
+- [x] Bouw de kaartweergave met normale Scryfall-afbeelding, Commander-badge en veilige externe Scryfall-link.
+- [x] Implementeer swipe rechts = like en swipe links = dislike, voor touch, muis en toetsenbord.
+- [x] Voeg reduced-motion-ondersteuning toe.
+- [x] Markeer iedere actief getoonde kaart als gezien; prefetched kaarten tellen nog niet als gezien.
+- [x] Bewaar `likedCards`, `dislikedCards` en `seenCards` gededupliceerd in `localStorage`.
+- [x] Bouw eenvoudige lijstweergaven voor likes, dislikes en historie, inclusief verwijderen uit lijsten.
+- [x] Implementeer flipgedrag: echte dubbelzijdige kaarten tonen de tweede face; enkelzijdige kaarten tonen een lokale, eigen kaartachterkant. De keuze voor een officiële Magic-card-back blijft een open licentiebeslissing.
+- [x] Voeg een placeholder toe voor falende kaartafbeeldingen, zonder swipe of Scryfall-link te blokkeren.
+- [x] Handel `localStorage`-quota af met een waarschuwing terwijl de sessie bruikbaar blijft.
 
 ## Fase 5 — Tests en kwaliteitsgrenzen
 

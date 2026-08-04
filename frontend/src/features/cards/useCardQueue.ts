@@ -21,7 +21,7 @@ export function useCardQueue(): CardQueue {
   const [requestNumber, setRequestNumber] = useState(0);
   const [appliedRequest, setAppliedRequest] = useState(-1);
   const shouldFetch = queue.length <= PREFETCH_THRESHOLD;
-  const query = useQuery({
+  const { data, error, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["cards", "random-batch", requestNumber],
     queryFn: ({ signal }) => getRandomCards(signal),
     enabled: shouldFetch && requestNumber !== appliedRequest,
@@ -30,19 +30,19 @@ export function useCardQueue(): CardQueue {
   });
 
   useEffect(() => {
-    if (!shouldFetch || query.isFetching || requestNumber !== appliedRequest) {
+    if (!shouldFetch || isFetching || requestNumber !== appliedRequest) {
       return;
     }
     setRequestNumber((current) => current + 1);
-  }, [appliedRequest, query.isFetching, requestNumber, shouldFetch]);
+  }, [appliedRequest, isFetching, requestNumber, shouldFetch]);
 
   useEffect(() => {
-    if (!query.data || appliedRequest === requestNumber) {
+    if (!data || appliedRequest === requestNumber) {
       return;
     }
     setQueue((current) => {
       const activeIds = new Set(current.map((card) => card.id));
-      const uniqueCards = query.data.cards.filter((card) => {
+      const uniqueCards = data.cards.filter((card) => {
         if (activeIds.has(card.id)) {
           return false;
         }
@@ -52,7 +52,7 @@ export function useCardQueue(): CardQueue {
       return [...current, ...uniqueCards];
     });
     setAppliedRequest(requestNumber);
-  }, [appliedRequest, query.data, requestNumber]);
+  }, [appliedRequest, data, requestNumber]);
 
   const activeCard = queue[0];
   return useMemo(
@@ -60,11 +60,11 @@ export function useCardQueue(): CardQueue {
       activeCard,
       cardsRemaining: queue.length,
       dismissActiveCard: () => setQueue((current) => current.slice(1)),
-      isLoading: !activeCard && query.isLoading,
-      isRefreshing: query.isFetching,
-      error: query.error,
-      retry: () => void query.refetch(),
+      isLoading: !activeCard && isLoading,
+      isRefreshing: isFetching,
+      error,
+      retry: () => void refetch(),
     }),
-    [activeCard, query.error, query.isFetching, query.isLoading, query.refetch, queue.length],
+    [activeCard, error, isFetching, isLoading, queue.length, refetch],
   );
 }
