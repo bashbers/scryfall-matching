@@ -144,9 +144,7 @@ def test_checked_in_openapi_contract_contains_phase_1_endpoints() -> None:
     contract = json.loads(Path("openapi.json").read_text(encoding="utf-8"))
 
     assert "/api/v1/cards/random" in contract["paths"]
-    cards_schema = contract["components"]["schemas"]["RandomCardsResponse"]["properties"][
-        "cards"
-    ]
+    cards_schema = contract["components"]["schemas"]["RandomCardsResponse"]["properties"]["cards"]
     assert cards_schema["minItems"] == 5
     assert cards_schema["maxItems"] == 5
 

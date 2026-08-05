@@ -15,7 +15,9 @@ beforeEach(() => {
 });
 
 function wrapper({ children }: { children: ReactNode }) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
@@ -30,7 +32,9 @@ function cards(prefix: string) {
 test("keeps duplicate cards out of the active queue and prefetches at two remaining cards", async () => {
   const firstBatch = cards("first");
   const secondBatch = [firstBatch[4], ...cards("second").slice(1)];
-  mockedGetRandomCards.mockResolvedValueOnce({ cards: firstBatch }).mockResolvedValueOnce({ cards: secondBatch });
+  mockedGetRandomCards
+    .mockResolvedValueOnce({ cards: firstBatch })
+    .mockResolvedValueOnce({ cards: secondBatch });
 
   const { result } = renderHook(() => useCardQueue(), { wrapper });
   await waitFor(() => expect(result.current.cardsRemaining).toBe(5));
@@ -46,7 +50,10 @@ test("keeps duplicate cards out of the active queue and prefetches at two remain
 
 test("shows its error only while no active card is available", async () => {
   mockedGetRandomCards.mockRejectedValue(new Error("offline"));
-  const { result } = renderHook(() => useCardQueue({ retryDelays: [1, 1, 1] }), { wrapper });
+  const { result } = renderHook(
+    () => useCardQueue({ retryDelays: [1, 1, 1] }),
+    { wrapper },
+  );
 
   await waitFor(() => expect(result.current.error?.message).toBe("offline"));
 

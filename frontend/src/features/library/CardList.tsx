@@ -18,7 +18,11 @@ export function CardList({ cards, emptyMessage, onRemove }: CardListProps) {
             <img className="card-thumbnail" src={card.frontImageUrl} alt="" />
             <span>{card.name}</span>
           </a>
-          <button type="button" onClick={() => onRemove(card.id)} aria-label={`${card.name} verwijderen`}>
+          <button
+            type="button"
+            onClick={() => onRemove(card.id)}
+            aria-label={`${card.name} verwijderen`}
+          >
             Verwijderen
           </button>
         </li>

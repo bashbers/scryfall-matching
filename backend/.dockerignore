@@ -1,5 +1,10 @@
-__pycache__/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
 .venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.e2e-scryfall/
+data/
+__pycache__/
+*.py[cod]
+tests/
+openapi.json

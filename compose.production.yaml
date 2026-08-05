@@ -1,0 +1,32 @@
+name: scryfall-matching-production
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATA_PATH: /app/data
+      BATCH_SIZE: ${BATCH_SIZE:-5}
+      SCRYFALL_TIMEOUT_SECONDS: ${SCRYFALL_TIMEOUT_SECONDS:-30}
+      SCRYFALL_UPDATE_INTERVAL_HOURS: ${SCRYFALL_UPDATE_INTERVAL_HOURS:-24}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - scryfall-production-data:/app/data
+    mem_limit: 1g
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    mem_limit: 256m
+
+volumes:
+  scryfall-production-data:

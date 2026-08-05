@@ -21,7 +21,9 @@ export type UseCardQueueOptions = {
   retryDelays?: readonly number[];
 };
 
-export function useCardQueue({ retryDelays = RETRY_DELAYS }: UseCardQueueOptions = {}): CardQueue {
+export function useCardQueue({
+  retryDelays = RETRY_DELAYS,
+}: UseCardQueueOptions = {}): CardQueue {
   const [queue, setQueue] = useState<Card[]>([]);
   const [requestNumber, setRequestNumber] = useState(0);
   const [appliedRequest, setAppliedRequest] = useState(-1);
@@ -31,7 +33,8 @@ export function useCardQueue({ retryDelays = RETRY_DELAYS }: UseCardQueueOptions
     queryFn: ({ signal }) => getRandomCards(signal),
     enabled: shouldFetch && requestNumber !== appliedRequest,
     retry: retryDelays.length,
-    retryDelay: (attemptIndex) => retryDelays[attemptIndex] ?? retryDelays.at(-1) ?? 0,
+    retryDelay: (attemptIndex) =>
+      retryDelays[attemptIndex] ?? retryDelays.at(-1) ?? 0,
   });
 
   useEffect(() => {

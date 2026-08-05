@@ -125,12 +125,14 @@ class ScryfallBulkImporter:
         error: Exception,
     ) -> None:
         metadata = dict(existing_metadata)
-        metadata.update({
-            "lastAttemptStatus": "failed",
-            "lastAttemptedVersion": export.version,
-            "lastError": str(error),
-            "lastAttemptedAt": _isoformat(datetime.now(UTC)),
-        })
+        metadata.update(
+            {
+                "lastAttemptStatus": "failed",
+                "lastAttemptedVersion": export.version,
+                "lastError": str(error),
+                "lastAttemptedAt": _isoformat(datetime.now(UTC)),
+            }
+        )
         if metadata.get("importStatus") != "complete":
             metadata["importStatus"] = "failed"
         write_metadata(self._data_directory / METADATA_FILENAME, metadata)
@@ -264,13 +266,14 @@ def _compact_source(source_path: Path, compact_path: Path) -> tuple[int, int]:
     seen_keys = set()
     imported_cards = 0
     skipped_records = 0
-    with _open_bulk_source(source_path) as source, compact_path.open(
-        "w", encoding="utf-8"
-    ) as output:
+    with (
+        _open_bulk_source(source_path) as source,
+        compact_path.open("w", encoding="utf-8") as output,
+    ):
         for record in iter_bulk_records(source):
             try:
                 card = map_card(record)
-            except (KeyError, TypeError, ValueError):
+            except KeyError, TypeError, ValueError:
                 skipped_records += 1
                 continue
             if card is None:
@@ -327,7 +330,7 @@ def _validate_import(imported_cards: int, skipped_records: int) -> None:
 def _read_metadata(path: Path) -> Mapping[str, Any]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except OSError, json.JSONDecodeError:
         return {}
     return payload if isinstance(payload, Mapping) else {}
 

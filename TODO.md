@@ -70,13 +70,13 @@ Bronnen: `requirements.md` en `technisch-ontwerp-scryfall-matching.md` uit het C
 
 ## Fase 6 — CI, containers en oplevering
 
-- [ ] Configureer CI voor backend-lint, typecheck, tests en OpenAPI-export.
-- [ ] Configureer CI voor frontend-lint, typecheck, OpenAPI-clientgeneratie, tests en productiebuild.
-- [ ] Laat CI falen wanneer OpenAPI wijzigt zonder bijgewerkte gegenereerde client.
-- [ ] Voeg containerbuilds en dependency/security-scans toe.
-- [ ] Bouw een backendcontainer met non-root-user, persistent `/app/data`-volume en healthcheck op `/api/v1/health/live`.
-- [ ] Bouw een frontendcontainer met statische server, SPA-fallback en correcte caching voor hashed assets versus `index.html`.
-- [ ] Test productie-instellingen met één Uvicorn-worker en minimaal 1 GB RAM.
+- [x] Configureer CI voor backend-lint, typecheck, tests en OpenAPI-export.
+- [x] Configureer CI voor frontend-lint, typecheck, OpenAPI-clientgeneratie, tests en productiebuild.
+- [x] Laat CI falen wanneer OpenAPI wijzigt zonder bijgewerkte gegenereerde client.
+- [x] Voeg containerbuilds en dependency/security-scans toe.
+- [x] Bouw een backendcontainer met non-root-user, persistent `/app/data`-volume en healthcheck op `/api/v1/health/live`.
+- [x] Bouw een frontendcontainer met statische server, SPA-fallback en correcte caching voor hashed assets versus `index.html`.
+- [x] Test productie-instellingen met één Uvicorn-worker en minimaal 1 GB RAM.
 
 ## Beslissingen die vóór of tijdens implementatie moeten worden vastgezet
 

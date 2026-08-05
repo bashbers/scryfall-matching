@@ -97,7 +97,8 @@ a {
   overflow: hidden;
   border-radius: 1rem;
   background: #312e81;
-  transform: translateY(calc(var(--stack-index) * 0.7rem)) scale(calc(1 - var(--stack-index) * 0.025));
+  transform: translateY(calc(var(--stack-index) * 0.7rem))
+    scale(calc(1 - var(--stack-index) * 0.025));
   transform-origin: top center;
   opacity: calc(1 - var(--stack-index) * 0.18);
 }

@@ -67,15 +67,20 @@ function toType(schema) {
   if (schema.type === "object" || schema.properties) {
     const required = new Set(schema.required ?? []);
     const properties = Object.entries(schema.properties ?? {})
-      .map(([name, property]) => `  ${JSON.stringify(name)}${required.has(name) ? "" : "?"}: ${toType(property)};`)
+      .map(
+        ([name, property]) =>
+          `  ${JSON.stringify(name)}${required.has(name) ? "" : "?"}: ${toType(property)};`,
+      )
       .join("\n");
     return `{\n${properties}\n}`;
   }
-  return {
-    string: "string",
-    integer: "number",
-    number: "number",
-    boolean: "boolean",
-    null: "null",
-  }[schema.type] ?? "unknown";
+  return (
+    {
+      string: "string",
+      integer: "number",
+      number: "number",
+      boolean: "boolean",
+      null: "null",
+    }[schema.type] ?? "unknown"
+  );
 }

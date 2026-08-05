@@ -98,9 +98,7 @@ def test_interrupted_download_does_not_publish_a_partial_snapshot(tmp_path: Path
 def test_existing_dataset_version_skips_download(tmp_path: Path) -> None:
     version = "2026-08-04T00:00:00Z"
     source = json.dumps([_single_card("id", "oracle", "Legal")])
-    initial_importer = ScryfallBulkImporter(
-        tmp_path, 1, client=FakeBulkDataClient(source, version)
-    )
+    initial_importer = ScryfallBulkImporter(tmp_path, 1, client=FakeBulkDataClient(source, version))
     initial_importer.refresh(_provider())
     importer = ScryfallBulkImporter(tmp_path, 1, client=FakeBulkDataClient("[]", version))
 
@@ -129,9 +127,9 @@ def test_importer_retains_only_active_and_one_rollback_snapshot(tmp_path: Path) 
     provider = _provider()
     for version, name in (("one", "One"), ("two", "Two"), ("three", "Three")):
         source = json.dumps([_single_card(version, version, name)])
-        ScryfallBulkImporter(
-            tmp_path, 1, client=FakeBulkDataClient(source, version)
-        ).refresh(provider)
+        ScryfallBulkImporter(tmp_path, 1, client=FakeBulkDataClient(source, version)).refresh(
+            provider
+        )
 
     snapshots = [path for path in (tmp_path / "snapshots").iterdir() if path.is_dir()]
     assert len(snapshots) == 2

@@ -2,12 +2,12 @@
 
 Een mobiele en desktopvriendelijke swipe-app om Magic: The Gathering-kaarten uit de Scryfall-bulkdataset te ontdekken.
 
-De repository is een monorepo met een FastAPI-backend en een React/TypeScript/Vite-frontend. Fase 0 leverde de ontwikkelfundering; fase 1 voegt het backenddomein, de eerste API-contracten en health endpoints toe. De echte Scryfall-import en swipefunctionaliteit volgen in de volgende fasen.
+De repository is een monorepo met een FastAPI-backend en een React/TypeScript/Vite-frontend. De app importeert de Scryfall-bulkdataset, presenteert kaarten in een swipe-ervaring en bewaart likes, dislikes en historie lokaal in de browser.
 
 ## Vereisten
 
 - Docker Desktop met Docker Compose v2 (aanbevolen)
-- Of lokaal: Python 3.14+ en Node.js 20+
+- Of lokaal: Python 3.14+ en Node.js 20.19+
 
 ## Starten met Docker
 
@@ -51,9 +51,19 @@ npm run typecheck
 npm run build
 ```
 
+## Productiecontainers
+
+De productieconfiguratie gebruikt een non-root backend met één Uvicorn-worker en een persistent datavolume. De frontend is een Nginx-container met SPA-fallback, cacheheaders voor gehashte assets en een interne `/api`-proxy naar de backend.
+
+```powershell
+docker compose -f compose.production.yaml up --build
+```
+
+Open de frontend op http://localhost:8081. De backend blijft beschikbaar op http://localhost:8000; de containerlimiet voor de backend is 1 GiB RAM.
+
 ## Scryfall-data verversen
 
-De configuratie voor de datamap, timeout en het update-interval staat in `.env`. De daadwerkelijke bulkdownload, filtering en atomische datasetverversing worden in fase 2 geimplementeerd; de data blijft dan in het `scryfall-data`-volume onder `DATA_PATH`.
+De configuratie voor de datamap, timeout en het update-interval staat in `.env`. De bulkdownload filtert en dedupliceert de Scryfall-data en vervangt de compacte dataset atomisch. De data blijft onder `DATA_PATH`: in het ontwikkelvolume `scryfall-data` en in het productievolume `scryfall-production-data`.
 
 ## API-contract
 

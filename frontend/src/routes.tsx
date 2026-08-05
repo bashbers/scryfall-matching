@@ -1,4 +1,10 @@
-import { Link, Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
 import { CardSwiper } from "./features/cards/CardSwiper";
 import { useCardQueue } from "./features/cards/useCardQueue";
 import { CardList } from "./features/library/CardList";
@@ -26,7 +32,12 @@ const historyRoute = createRoute({
   component: HistoryRoute,
 });
 
-const routeTree = rootRoute.addChildren([swipeRoute, likesRoute, dislikesRoute, historyRoute]);
+const routeTree = rootRoute.addChildren([
+  swipeRoute,
+  likesRoute,
+  dislikesRoute,
+  historyRoute,
+]);
 export const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
@@ -50,7 +61,11 @@ function Layout() {
           <Link to="/history">Historie</Link>
         </nav>
       </header>
-      {storageWarning && <p className="storage-warning" role="alert">{storageWarning}</p>}
+      {storageWarning && (
+        <p className="storage-warning" role="alert">
+          {storageWarning}
+        </p>
+      )}
       <Outlet />
     </main>
   );
@@ -71,7 +86,9 @@ function SwipeRoute() {
     );
   }
   if (!activeCard) {
-    return <p>{queue.isLoading ? "Kaarten laden…" : "Geen kaarten beschikbaar."}</p>;
+    return (
+      <p>{queue.isLoading ? "Kaarten laden…" : "Geen kaarten beschikbaar."}</p>
+    );
   }
   return (
     <section aria-live="polite">
@@ -133,7 +150,13 @@ function HistoryRoute() {
   );
 }
 
-function ListPage({ title, children }: { title: string; children: React.ReactNode }) {
+function ListPage({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
       <h1>{title}</h1>

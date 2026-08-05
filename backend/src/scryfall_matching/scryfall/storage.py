@@ -32,7 +32,7 @@ def load_repository(data_directory: Path) -> InMemoryCardRepository | None:
         if compact_file_checksum(cards_path) != expected_checksum:
             return None
         cards = tuple(read_cards(cards_path))
-    except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):
+    except KeyError, TypeError, ValueError, json.JSONDecodeError, OSError:
         return None
     if not isinstance(version, str) or not cards:
         return None

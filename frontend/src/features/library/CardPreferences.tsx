@@ -16,13 +16,20 @@ type CardPreferences = {
 
 const CardPreferencesContext = createContext<CardPreferences | null>(null);
 
-export function CardPreferencesProvider({ children }: { children: React.ReactNode }) {
+export function CardPreferencesProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [likedCards, setLikedCards] = useStoredCards("likedCards");
   const [dislikedCards, setDislikedCards] = useStoredCards("dislikedCards");
   const [seenCards, setSeenCards] = useStoredCards("seenCards");
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
-  const update = (setter: React.Dispatch<React.SetStateAction<Card[]>>, card: Card) => {
+  const update = (
+    setter: React.Dispatch<React.SetStateAction<Card[]>>,
+    card: Card,
+  ) => {
     setter((current) => appendUnique(current, card));
   };
   const value: CardPreferences = {
@@ -32,7 +39,9 @@ export function CardPreferencesProvider({ children }: { children: React.ReactNod
     storageWarning,
     like: (card) => {
       update(setLikedCards, card);
-      setDislikedCards((current) => current.filter((item) => item.id !== card.id));
+      setDislikedCards((current) =>
+        current.filter((item) => item.id !== card.id),
+      );
     },
     dislike: (card) => {
       update(setDislikedCards, card);
@@ -40,16 +49,22 @@ export function CardPreferencesProvider({ children }: { children: React.ReactNod
     },
     markSeen: (card) => update(setSeenCards, card),
     remove: (list, cardId) => {
-      const setter = { likedCards: setLikedCards, dislikedCards: setDislikedCards, seenCards: setSeenCards }[
-        list
-      ];
+      const setter = {
+        likedCards: setLikedCards,
+        dislikedCards: setDislikedCards,
+        seenCards: setSeenCards,
+      }[list];
       setter((current) => current.filter((card) => card.id !== cardId));
     },
   };
 
   useEffect(() => {
     let storageFailed = false;
-    for (const [key, cards] of Object.entries({ likedCards, dislikedCards, seenCards })) {
+    for (const [key, cards] of Object.entries({
+      likedCards,
+      dislikedCards,
+      seenCards,
+    })) {
       try {
         window.localStorage.setItem(key, JSON.stringify(cards));
       } catch {
@@ -57,22 +72,32 @@ export function CardPreferencesProvider({ children }: { children: React.ReactNod
       }
     }
     setStorageWarning(
-      storageFailed ? "Lokale opslag is vol; je keuzes blijven alleen in deze sessie beschikbaar." : null,
+      storageFailed
+        ? "Lokale opslag is vol; je keuzes blijven alleen in deze sessie beschikbaar."
+        : null,
     );
   }, [dislikedCards, likedCards, seenCards]);
 
-  return <CardPreferencesContext.Provider value={value}>{children}</CardPreferencesContext.Provider>;
+  return (
+    <CardPreferencesContext.Provider value={value}>
+      {children}
+    </CardPreferencesContext.Provider>
+  );
 }
 
 export function useCardPreferences(): CardPreferences {
   const preferences = useContext(CardPreferencesContext);
   if (!preferences) {
-    throw new Error("useCardPreferences must be used inside CardPreferencesProvider.");
+    throw new Error(
+      "useCardPreferences must be used inside CardPreferencesProvider.",
+    );
   }
   return preferences;
 }
 
-function useStoredCards(key: StoredListName): [Card[], React.Dispatch<React.SetStateAction<Card[]>>] {
+function useStoredCards(
+  key: StoredListName,
+): [Card[], React.Dispatch<React.SetStateAction<Card[]>>] {
   const [cards, setCards] = useState<Card[]>(() => {
     try {
       const value = window.localStorage.getItem(key);

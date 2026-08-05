@@ -5,37 +5,6 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/api/v1/cards/random": {
-      "get": {
-        "tags": [
-          "cards"
-        ],
-        "summary": "Random Cards",
-        "operationId": "random_cards_api_v1_cards_random_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RandomCardsResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "The active card repository cannot serve a full batch.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/health/live": {
       "get": {
         "tags": [
@@ -81,6 +50,37 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ReadyHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cards/random": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Random Cards",
+        "operationId": "random_cards_api_v1_cards_random_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RandomCardsResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The active card repository cannot serve a full batch.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -162,8 +162,8 @@
       "LiveHealthResponse": {
         "properties": {
           "status": {
-            "const": "live",
             "type": "string",
+            "const": "live",
             "title": "Status"
           }
         },
@@ -194,12 +194,12 @@
       "ReadyHealthResponse": {
         "properties": {
           "status": {
+            "type": "string",
             "enum": [
               "ready",
               "empty",
               "unavailable"
             ],
-            "type": "string",
             "title": "Status"
           },
           "datasetVersion": {

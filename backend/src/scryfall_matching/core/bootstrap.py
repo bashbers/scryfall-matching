@@ -26,8 +26,7 @@ def _seed_cards() -> tuple[CompactCard, ...]:
             id="seed-sol-ring",
             name="Sol Ring",
             front_image_url=(
-                "https://api.scryfall.com/cards/named"
-                "?exact=Sol%20Ring&format=image&version=normal"
+                "https://api.scryfall.com/cards/named?exact=Sol%20Ring&format=image&version=normal"
             ),
             back_image_url=None,
             is_double_sided=False,
@@ -89,8 +88,7 @@ def _seed_cards() -> tuple[CompactCard, ...]:
             id="seed-cultivate",
             name="Cultivate",
             front_image_url=(
-                "https://api.scryfall.com/cards/named"
-                "?exact=Cultivate&format=image&version=normal"
+                "https://api.scryfall.com/cards/named?exact=Cultivate&format=image&version=normal"
             ),
             back_image_url=None,
             is_double_sided=False,

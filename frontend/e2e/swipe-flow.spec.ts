@@ -48,7 +48,9 @@ const cards = [
   },
 ];
 
-test("likes, dislikes, and shows history without relying on image delivery", async ({ page }) => {
+test("likes, dislikes, and shows history without relying on image delivery", async ({
+  page,
+}) => {
   await page.route("**/api/v1/cards/random", (route) =>
     route.fulfill({ json: { cards } }),
   );
@@ -75,7 +77,9 @@ test("shows retry UI after a network failure", async ({ page }) => {
   await page.route("**/api/v1/cards/random", (route) => route.abort("failed"));
   await page.goto("/");
 
-  await expect(page.getByRole("button", { name: "Opnieuw proberen" })).toBeVisible({ timeout: 10_000 });
+  await expect(
+    page.getByRole("button", { name: "Opnieuw proberen" }),
+  ).toBeVisible({ timeout: 10_000 });
 });
 
 test("supports mouse swipe on the card image", async ({ page }) => {
@@ -99,8 +103,12 @@ test("supports mouse swipe on the card image", async ({ page }) => {
   await expect(page.getByRole("article")).toHaveCSS("transform", "none");
 });
 
-test("keeps a visible stack and keyboard focus while selecting cards", async ({ page }) => {
-  await page.route("**/api/v1/cards/random", (route) => route.fulfill({ json: { cards } }));
+test("keeps a visible stack and keyboard focus while selecting cards", async ({
+  page,
+}) => {
+  await page.route("**/api/v1/cards/random", (route) =>
+    route.fulfill({ json: { cards } }),
+  );
   await page.goto("/");
 
   await expect(page.locator(".card-stack-preview")).toHaveCount(3);
@@ -112,7 +120,9 @@ test("keeps a visible stack and keyboard focus while selecting cards", async ({ 
 
 test("does not overflow the header on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
-  await page.route("**/api/v1/cards/random", (route) => route.fulfill({ json: { cards } }));
+  await page.route("**/api/v1/cards/random", (route) =>
+    route.fulfill({ json: { cards } }),
+  );
   await page.goto("/");
 
   const widths = await page.evaluate(() => ({
