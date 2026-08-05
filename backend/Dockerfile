@@ -1,17 +1,18 @@
-FROM python:3.14-slim AS builder
+FROM python:3.14.6-alpine3.24 AS builder
 
 WORKDIR /app
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy
 
-RUN pip install --no-cache-dir uv==0.12.1
+RUN apk add --no-cache build-base \
+    && pip install --no-cache-dir uv==0.12.1
 
 COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
 RUN uv sync --locked --no-dev --no-editable
 
-FROM python:3.14-slim
+FROM python:3.14.6-alpine3.24
 
 WORKDIR /app
 
@@ -20,11 +21,9 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     DATA_PATH=/app/data
 
-RUN apt-get update \
-    && apt-get upgrade --yes \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system app \
-    && useradd --system --gid app --home-dir /app app \
+RUN apk upgrade --no-cache \
+    && addgroup -S app \
+    && adduser -S -G app -h /app app \
     && mkdir /app/data \
     && chown app:app /app/data
 
