@@ -1,33 +1,33 @@
 /* This file is generated from backend/openapi.json. Do not edit manually. */
 
 export type ApiError = {
-  "code": string;
-  "message": string;
+  code: string;
+  message: string;
 };
 
 export type CardResponse = {
-  "id": string;
-  "name": string;
-  "frontImageUrl": string;
-  "backImageUrl": string | null;
-  "isDoubleSided": boolean;
-  "commanderLegal": boolean;
-  "scryfallUrl": string;
+  id: string;
+  name: string;
+  frontImageUrl: string;
+  backImageUrl: string | null;
+  isDoubleSided: boolean;
+  commanderLegal: boolean;
+  scryfallUrl: string;
 };
 
 export type LiveHealthResponse = {
-  "status": "live";
+  status: "live";
 };
 
 export type RandomCardsResponse = {
-  "cards": Array<CardResponse>;
+  cards: Array<CardResponse>;
 };
 
 export type ReadyHealthResponse = {
-  "status": "ready" | "empty" | "unavailable";
-  "datasetVersion": string;
-  "cardCount": number;
-  "loadedAt": string | null;
+  status: "ready" | "empty" | "unavailable";
+  datasetVersion: string;
+  cardCount: number;
+  loadedAt: string | null;
 };
 
 export type Card = CardResponse;
@@ -38,7 +38,8 @@ export async function getRandomCards(
 ): Promise<RandomCardsResponse> {
   const response = await fetch(baseUrl + "/api/v1/cards/random", { signal });
   if (!response.ok) {
-    const detail = (await response.json().catch(() => undefined)) as ApiError | undefined;
+    const detail = (await response.json().catch(() => undefined)) as
+      ApiError | undefined;
     throw new ApiRequestError(response.status, detail);
   }
   return (await response.json()) as RandomCardsResponse;

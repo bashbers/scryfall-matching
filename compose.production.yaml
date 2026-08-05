@@ -27,6 +27,18 @@ services:
       backend:
         condition: service_healthy
     mem_limit: 256m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.scryfallmatching-router.rule=Host(`scryfall.scraplab.nl`)"
+      - "traefik.http.routers.scryfallmatching-router.entryPoints=websecure"
+      - "traefik.docker.network=proxy"
+    networks:
+      - default
+      - proxy
 
 volumes:
   scryfall-production-data:
+
+networks:
+  proxy:
+    external: true
