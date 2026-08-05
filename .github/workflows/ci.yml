@@ -75,12 +75,12 @@ jobs:
           tags: scryfall-matching-frontend:ci
       - name: Export images for Trivy
         run: |
-          docker save scryfall-matching-backend:ci --output /tmp/scryfall-backend.tar
-          docker save scryfall-matching-frontend:ci --output /tmp/scryfall-frontend.tar
+          docker save scryfall-matching-backend:ci --output "$GITHUB_WORKSPACE/scryfall-backend.tar"
+          docker save scryfall-matching-frontend:ci --output "$GITHUB_WORKSPACE/scryfall-frontend.tar"
       - uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
-          input: /tmp/scryfall-backend.tar
+          input: /github/workspace/scryfall-backend.tar
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
@@ -88,7 +88,7 @@ jobs:
       - uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
-          input: /tmp/scryfall-frontend.tar
+          input: /github/workspace/scryfall-frontend.tar
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
