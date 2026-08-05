@@ -1,6 +1,8 @@
 fastapi<1,>=0.115
 httpx<1,>=0.27
+msgpack==1.2.1
 pydantic<3,>=2.9
+setuptools==78.1.1
 typing-extensions<5,>=4.12
 uvicorn[standard]<1,>=0.30
 

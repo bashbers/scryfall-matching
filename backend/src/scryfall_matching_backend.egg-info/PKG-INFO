@@ -6,7 +6,9 @@ Requires-Python: >=3.14
 Description-Content-Type: text/markdown
 Requires-Dist: fastapi<1,>=0.115
 Requires-Dist: httpx<1,>=0.27
+Requires-Dist: msgpack==1.2.1
 Requires-Dist: pydantic<3,>=2.9
+Requires-Dist: setuptools==78.1.1
 Requires-Dist: typing-extensions<5,>=4.12
 Requires-Dist: uvicorn[standard]<1,>=0.30
 Provides-Extra: dev

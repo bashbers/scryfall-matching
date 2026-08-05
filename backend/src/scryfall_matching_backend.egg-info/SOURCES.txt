@@ -26,4 +26,5 @@ src/scryfall_matching_backend.egg-info/entry_points.txt
 src/scryfall_matching_backend.egg-info/requires.txt
 src/scryfall_matching_backend.egg-info/top_level.txt
 tests/test_application.py
+tests/test_repository.py
 tests/test_scryfall_importer.py
