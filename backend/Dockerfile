@@ -20,7 +20,13 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     DATA_PATH=/app/data
 
-RUN groupadd --system app && useradd --system --gid app --home-dir /app app && mkdir /app/data && chown app:app /app/data
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app \
+    && useradd --system --gid app --home-dir /app app \
+    && mkdir /app/data \
+    && chown app:app /app/data
 
 COPY --from=builder /app/.venv /app/.venv
 COPY --chown=app:app src ./src
