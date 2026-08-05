@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import prettier from "prettier";
 
 const scriptDirectory = new URL(".", import.meta.url);
 const openApiPath = new URL("../../backend/openapi.json", scriptDirectory);
@@ -45,7 +46,11 @@ export class ApiRequestError extends Error {
 }
 `;
 
-await writeFile(outputPath, output, "utf8");
+const formattedOutput = await prettier.format(output, {
+  filepath: fileURLToPath(outputPath),
+});
+
+await writeFile(outputPath, formattedOutput, "utf8");
 console.log(`Generated ${fileURLToPath(outputPath)}`);
 
 function toType(schema) {
