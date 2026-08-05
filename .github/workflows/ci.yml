@@ -75,6 +75,7 @@ jobs:
           tags: scryfall-matching-frontend:ci
       - uses: aquasecurity/trivy-action@v0.36.0
         with:
+          scan-type: image
           image-ref: scryfall-matching-backend:ci
           format: table
           severity: HIGH,CRITICAL
@@ -82,6 +83,7 @@ jobs:
           ignore-unfixed: true
       - uses: aquasecurity/trivy-action@v0.36.0
         with:
+          scan-type: image
           image-ref: scryfall-matching-frontend:ci
           format: table
           severity: HIGH,CRITICAL
